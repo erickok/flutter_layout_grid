@@ -50,18 +50,12 @@ For Flutter versions before v1.14.0, use `flutter_layout_grid: ^0.9.0`
 
 ## Example
 
-This is the source for the sample you can see above.
+This is how you would specify an application layout using `LayoutGrid`:
 
 ```dart
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 
-const cellRed = Color(0xffc73232);
-const cellMustard = Color(0xffd7aa22);
-const cellGrey = Color(0xffcfd4e0);
-const cellBlue = Color(0xff1553be);
-const background = Color(0xff242830);
-
-class PietPainting extends StatelessWidget {
+class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -70,33 +64,25 @@ class PietPainting extends StatelessWidget {
         columnGap: 12,
         rowGap: 12,
         templateAreas: gridTemplateAreas([
-          'r R  b  b  b',
-          'r R  Y  Y  Y',
-          'y R  Y  Y  Y',
-          'y R sg sb sy',
+          'header header  header ',
+          'nav    content aside  ',
+          'nav    content .      ',
+          'footer footer  footer ',
         ]),
-        // A number of extension methods are provided for concise track sizing
-        templateColumnSizes: [1.0.fr, 3.5.fr, 1.3.fr, 1.3.fr, 1.3.fr],
+        // Extension methods on num are provided for concise track sizing
+        templateColumnSizes: [240.px, 1.fr, auto],
         templateRowSizes: [
-          1.0.fr,
-          0.3.fr,
-          1.5.fr,
-          1.2.fr,
+          144.px,
+          auto,
+          1.fr,
+          240.px,
         ],
         children: [
-          // Column 1
-          Container(color: cellRed).inGridArea('r'),
-          Container(color: cellMustard).inGridArea('y'),
-          // Column 2
-          Container(color: cellRed).inGridArea('R'),
-          // Column 3
-          Container(color: cellBlue).inGridArea('b'),
-          Container(color: cellMustard).inGridArea('Y'),
-          Container(color: cellGrey).inGridArea('sg'),
-          // Column 4
-          Container(color: cellBlue).inGridArea('sb'),
-          // Column 5
-          Container(color: cellMustard).inGridArea('sy'),
+          Header().inGridArea('header'),
+          Navigation().inGridArea('nav'),
+          Content().inGridArea('content'),
+          Aside().inGridArea('aside'),
+          Footer().inGridArea('footer'),
         ],
       ),
     );
@@ -104,21 +90,35 @@ class PietPainting extends StatelessWidget {
 }
 ```
 
+This example is available at
+[`example/app_layout.dart`](/example/app_layout.dart).
+
+For a similar example that includes responsive behavior, check out
+[`example/responsive_app_layout.dart`](/example/responsive_app_layout.dart).
+
 ## Usage
 
 ### Sizing of Columns and Rows
 
 There are currently three way to size tracks (rows or columns):
 
-- `FixedSizeTrack` — occupies a specific number of pixels on an axis
-- `FlexibleSizeTrack` — consumes remaining space after the initial layout has
-  completed.
-- `IntrinsicContentTrackSize` — sized to contain its items' contents. Will also
-  expand to fill available space, once `FlexibleTrackSize` tracks have been
-  given the opportunity.
++-----------------------------+----------------------------------------------------------------------------------+-----------------------------------------+
+| Class Name                  | Description                                                                      | Usage                                   |
++-----------------------------+----------------------------------------------------------------------------------+-----------------------------------------+
+| `FixedTrackSize`            | Occupies a specific number of pixels on an axis                                  | `FixedTrackSize(64)` or `64.px`         |
++-----------------------------+----------------------------------------------------------------------------------+-----------------------------------------+
+| `FlexibleSizeTrack`         | Fills remaining space after the initial layout has completed                     | `FlexibleTrackSize(1)` or `1.fr`        |
++-----------------------------+----------------------------------------------------------------------------------+-----------------------------------------+
+| `IntrinsicContentTrackSize` | Sized to contain its items' contents. Will also expand to fill available space,  | `IntrinsicContentTrackSize()` or `auto` |
+|                             | once `FlexibleTrackSize` tracks have been given the opportunity.                 |                                         |
++-----------------------------+----------------------------------------------------------------------------------+-----------------------------------------+
 
 Technically, you could define your own, but I wouldn't because the API will be
 evolving.
+
+### Extension methods for sizing Columns and Rows
+
+`flutter_layout_grid` provides
 
 ### Placing widgets in the `LayoutGrid`
 
@@ -157,8 +157,8 @@ LayoutGrid(
     '. . b',
   ]),
   // Note that the number of columns and rows matches the grid above (3x3)
-  templateColumnSizes: [FixedTrackSize(100), FixedTrackSize(100), FixedTrackSize(100)],
-  templateRowSizes: [FixedTrackSize(100), FixedTrackSize(100), FixedTrackSize(100)],
+  templateColumnSizes: [fixed(100), fixed(100), fixed(100)],
+  templateRowSizes: [fixed(100), fixed(100), fixed(100)],
   children: [
     // Using NamedAreaGridPlacement constructor
     NamedAreaGridPlacement(
@@ -224,8 +224,6 @@ A definitely-placed item (meaning `columnStart` and `rowStart` have both been
 provided), will always be placed precisely, even if it overlaps other
 definitely-placed items. Automatically-placed items will flow around those that
 have been placed definitely.
-
-##### Named Areas
 
 #### Accessibility and Placement
 

@@ -284,7 +284,7 @@ class RenderLayoutGrid extends RenderBox
       parentData.offset = areaRect.topLeft;
 
       child.layout(
-        BoxConstraints.loose(areaRect.size),
+        BoxConstraints.tight(areaRect.size),
         // Note that we do not use the parentUsesSize argument, as we already
         // ask for intrinsics sizes from every child that we care about, and
         // that has the same effect of registering the grid for relayout
